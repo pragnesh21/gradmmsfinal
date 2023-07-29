@@ -16,4 +16,4 @@ const store = configureStore({
 
 export default store;
 
-export const server = "https://graduatemomoswala-z445.vercel.app/";
+export const server = "https://mernappdm.onrender.com/api/v1/";
