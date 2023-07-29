@@ -1,0 +1,151 @@
+import React from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import momos1 from "../../assets/momos1.png";
+import momos2 from "../../assets/momos2.png";
+import momos3 from "../../assets/momos3.png";
+
+const CartItem = ({ value, title, img, increment, decrement }) => (
+  <div className="cartItem">
+    <div>
+      <h4>{title}</h4>
+      <img src={img} alt="Item" />
+    </div>
+
+    <div>
+      <button onClick={decrement}>-</button>
+      <input type="number" readOnly value={value} />
+      <button onClick={increment}>+</button>
+    </div>
+  </div>
+);
+
+const Cart = () => {
+  const {
+    cartItems: {
+      kotheyMomos: { quantity: kotheyMomos },
+      steamedMomos: { quantity: steamedMomos },
+      friedMomos: { quantity: friedMomos },
+    },
+    subTotal,
+    tax,
+    shippingCharges,
+    total,
+  } = useSelector((state) => state.cart);
+
+  const { cartItems: orderItems } = useSelector((state) => state.cart);
+
+  const dispatch = useDispatch();
+
+  const increment = (item) => {
+    switch (item) {
+      case 1:
+        dispatch({ type: "kotheyMomosIncrement" });
+        dispatch({ type: "calculatePrice" });
+        break;
+      case 2:
+        dispatch({ type: "steamedMomosIncrement" });
+        dispatch({ type: "calculatePrice" });
+        break;
+      case 3:
+        dispatch({ type: "friedMomosIncrement" });
+        dispatch({ type: "calculatePrice" });
+        break;
+
+      default:
+        dispatch({ type: "kotheyMomosIncrement" });
+        dispatch({ type: "calculatePrice" });
+        break;
+    }
+  };
+
+  const decrement = (item) => {
+    switch (item) {
+      case 1:
+        if (kotheyMomos === 0) break;
+        dispatch({ type: "kotheyMomosDecrement" });
+        dispatch({ type: "calculatePrice" });
+        break;
+      case 2:
+        if (steamedMomos === 0) break;
+        dispatch({ type: "steamedMomosDecrement" });
+        dispatch({ type: "calculatePrice" });
+        break;
+      case 3:
+        if (friedMomos === 0) break;
+        dispatch({ type: "friedMomosDecrement" });
+        dispatch({ type: "calculatePrice" });
+        break;
+
+      default:
+        if (kotheyMomos === 0) break;
+        dispatch({ type: "kotheyMomosDecrement" });
+        dispatch({ type: "calculatePrice" });
+        break;
+    }
+  };
+
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(orderItems));
+    localStorage.setItem(
+      "cartPrices",
+      JSON.stringify({
+        subTotal,
+        tax,
+        shippingCharges,
+        total,
+      })
+    );
+  }, [orderItems, subTotal, tax, shippingCharges, total]);
+
+  return (
+    <section className="cart">
+      <main>
+        <CartItem
+          title={"Kothey Momos"}
+          img={momos1}
+          value={kotheyMomos}
+          increment={() => increment(1)}
+          decrement={() => decrement(1)}
+        />
+        <CartItem
+          title={"Steamed Momos"}
+          img={momos2}
+          value={steamedMomos}
+          increment={() => increment(2)}
+          decrement={() => decrement(2)}
+        />
+        <CartItem
+          title={"Fried Momos"}
+          img={momos3}
+          value={friedMomos}
+          increment={() => increment(3)}
+          decrement={() => decrement(3)}
+        />
+
+        <article>
+          <div>
+            <h4>Sub Total</h4>
+            <p>₹{subTotal}</p>
+          </div>
+          <div>
+            <h4>Tax</h4>
+            <p>₹{tax}</p>
+          </div>
+          <div>
+            <h4>Shipping Charges</h4>
+            <p>₹{shippingCharges}</p>
+          </div>{" "}
+          <div>
+            <h4>Total</h4>
+            <p>₹{total}</p>
+          </div>
+          <Link to="/shipping">Checkout</Link>
+        </article>
+      </main>
+    </section>
+  );
+};
+
+export default Cart;
